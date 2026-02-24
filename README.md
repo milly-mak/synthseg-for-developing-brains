@@ -14,10 +14,11 @@ The following script takes the BOPS manually curated ground truth segmentations,
 We will run the following six pipelines:
 
 1. SynthSeg robust vanilla (`SSr-vanilla`)
+2. Recon-All Clinical vanilla (`RCA-clinical-vanilla`)
 3. SynthSeg robust crop (`SSr-crop`)
 4. SynthSeg robust resize (`SSr-resize`)
 5. SynthSeg robust resize and crop (`SSr-resize-and-crop`)
-6. Recon-All Clinical vanilla (`RCA-clinical-vanilla`)
+6. Recon-All Clinical resize and crop (`RCA-clinical-resize-and-crop`)
    
 We use the following scripts to process the BCP T1w-scans:
 
