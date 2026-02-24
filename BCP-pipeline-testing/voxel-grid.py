@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# This script resamples a segmentation into a target space, matching the target voxel grid
 import argparse
 import os
 import ants
@@ -8,8 +9,8 @@ def parse_args():
     p = argparse.ArgumentParser(
         description="Resample a segmentation onto a target image grid (nearest-neighbour)."
     )
-    p.add_argument("--seg", required=True, help="Segmentation to resample (e.g., BOPS seg in BCP space).")
-    p.add_argument("--target", required=True, help="Target image defining the grid (e.g., BCP SynthSeg seg or BCP T1).")
+    p.add_argument("--seg", required=True, help="Segmentation to resample.")
+    p.add_argument("--target", required=True, help="Target image defining the grid.")
     p.add_argument("--out", required=True, help="Output path for resampled segmentation.")
     return p.parse_args()
 

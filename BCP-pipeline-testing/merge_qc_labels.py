@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# merge_ctx_labels.py
+# merge_ctx_labels.py takes in a SynthSeg segmentation file and merges labels to match QC classes
 # Usage: python merge_ctx_labels.py input_parcellation.[nii|nii.gz] output_merged.nii.gz
 
 import sys
