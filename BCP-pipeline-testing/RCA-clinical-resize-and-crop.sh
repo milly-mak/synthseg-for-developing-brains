@@ -47,7 +47,7 @@ echo "Started python environment"
 # For convenience, I have a lot of relevant scan info in a table
 # We use this table further below
 # Columns are: subject-id | session | acquisition | irrelevant | age in days 
-allt1s=${rdspath}/dev/${study}/code/preprocessing/all-T1s.tsv
+allt1s=${rdspath}/dev/${study}/code/BCP-pipeline-testing/all-T1s.tsv
 bidsdir=${rdspath}/data/BCP/BIDS/
 
 

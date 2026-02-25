@@ -27,20 +27,6 @@ sub = parser.add_subparsers(dest="mode", required=True)
 p_crop = sub.add_parser("crop")
 p_crop.add_argument("--in_file", required=True)
 p_crop.add_argument("--mask_file", required=True)
-p_cro#!/usr/bin/env python3
-
-import argparse
-import os
-import numpy as np
-import ants
-
-parser = argparse.ArgumentParser(description="ANTs crop / decrop using mm padding.")
-sub = parser.add_subparsers(dest="mode", required=True)
-
-# ---- crop ----
-p_crop = sub.add_parser("crop")
-p_crop.add_argument("--in_file", required=True)
-p_crop.add_argument("--mask_file", required=True)
 p_crop.add_argument("--out_file", required=True)
 p_crop.add_argument("--pad_mm", type=float, default=25.0)
 
@@ -105,72 +91,7 @@ elif args.mode == "decrop":
     ants.image_write(decropped, args.out_file)
 
     print("Decropped:", args.out_file)
-    print("Full size:", ref.shape)p.add_argument("--out_file", required=True)
-p_crop.add_argument("--pad_mm", type=float, default=25.0)
-
-# ---- decrop ----
-p_decrop = sub.add_parser("decrop")
-p_decrop.add_argument("--cropped_file", required=True)
-p_decrop.add_argument("--ref_full_file", required=True)
-p_decrop.add_argument("--out_file", required=True)
-
-args = parser.parse_args()
-
-if args.mode == "crop":
-    img  = ants.image_read(args.in_file)    # Image to be cropeed
-    mask = ants.image_read(args.mask_file)  # Mask file
-
-    # Check mask is acually a mask
-    m = mask.numpy() > 0
-    coords = np.array(np.nonzero(m))
-    if coords.size == 0:
-        raise RuntimeError("Mask is empty (no voxels > 0); cannot crop.")
-
-    # Find bounderies of bask, i.e. min/max indices in each direction
-    xmin, ymin, zmin = coords.min(axis=1)
-    xmax, ymax, zmax = coords.max(axis=1)
-    
-    # Get image spacing. i.e. mm voxel dimension in each direction
-    sx, sy, sz = img.spacing
-    # Need to find number of voxels that make up the padding, i.e. convert padding mm to number of voxels
-    px = int(round(args.pad_mm / sx)) if args.pad_mm > 0 else 0
-    py = int(round(args.pad_mm / sy)) if args.pad_mm > 0 else 0
-    pz = int(round(args.pad_mm / sz)) if args.pad_mm > 0 else 0
-
-    # Setup cropping box from mask boundery and padding  
-    xmin = max(int(xmin) - px, 0)
-    ymin = max(int(ymin) - py, 0)
-    zmin = max(int(zmin) - pz, 0)
-    xmax = min(int(xmax) + px, img.shape[0] - 1)
-    ymax = min(int(ymax) + py, img.shape[1] - 1)
-    zmax = min(int(zmax) + pz, img.shape[2] - 1)
-
-    lower = (xmin, ymin, zmin)
-    upper = (xmax, ymax, zmax)
-
-    print(f"Padding: {args.pad_mm} mm")
-    print(f"Spacing: {img.spacing}")
-    print(f"Pad vox:  {(px, py, pz)}")
-    print(f"BBox:     lower={lower} upper={upper}")
-
-    # Do the actual cropping based on cropping box
-    cropped = ants.crop_indices(img, lowerind=lower, upperind=upper)
-    # Safe out file
-    os.makedirs(os.path.dirname(os.path.abspath(args.out_file)), exist_ok=True)
-    ants.image_write(cropped, args.out_file)
-
-    print("Cropped:", args.out_file)
-    print("Original size:", img.shape)
-    print("Cropped size:", cropped.shape)
-
-elif args.mode == "decrop":
-    cropped = ants.image_read(args.cropped_file)    # Cropped image
-    ref     = ants.image_read(args.ref_full_file)   # Original image that was cropped
-
-    decropped = ants.decrop_image(cropped, ref)     # Fill in space around cropped image again
-
-    os.makedirs(os.path.dirname(os.path.abspath(args.out_file)), exist_ok=True)
-    ants.image_write(decropped, args.out_file)
-
-    print("Decropped:", args.out_file)
     print("Full size:", ref.shape)
+
+
+

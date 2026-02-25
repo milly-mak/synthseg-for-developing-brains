@@ -18,7 +18,7 @@ if len(sys.argv) != 5:
 img_orig = sys.argv[1] # File to compare to
 img_comp = sys.argv[2] # File to compare
 lut_path = sys.argv[3] # LUT - make sure it has columns index name R G B A (or dummy)
-out_csv  = sys.argv[4] # Output file to write
+out_csv  = sys.argv[4] # Output file to save out
 
 # Load images
 mask_orig = nb.load(img_orig).get_fdata().astype(np.int32)

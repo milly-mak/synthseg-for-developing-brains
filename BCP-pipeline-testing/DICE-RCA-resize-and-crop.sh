@@ -3,7 +3,7 @@
 #SBATCH --time=00:05:00
 #SBATCH --cpus-per-task=1
 #SBATCH --account=CORE-WCHN-MELD-SL2-CPU
-#SBATCH --output=logs/DICE_crop_%a.txt
+#SBATCH --output=logs/DICE_resize-and-crop-%a.txt
 #SBATCH --array=2-73
 #SBATCH --partition=icelake
 
@@ -19,7 +19,7 @@ mkdir logs # to save log files in
 # Basepath - this is what you'd have to change to your account:
 rdspath=/rds/project/kw350/rds-kw350-meld/
 
-pipeline='synthseg-robust-crop'
+pipeline='reconall-clinical-resize-and-crop'
 
 # Input paths
 allt1s=${rdspath}/growthcharts/dev/${study}/code/BCP-pipeline-testing/all-T1s.tsv
@@ -56,44 +56,45 @@ line=$(sed -n "$((SLURM_ARRAY_TASK_ID))p" "$allt1s")
 # Parse columns to get file info
 read -r subject session acq sex age <<< "$line"
 
-groundtruth_segmentation=${segmentationdir}/${subject}/${session}/${subject}_${session}_run-001_from-BOPS_to-BCP_desc-rigid_dseg.nii.gz
-synthseg_segmentation=${bidsdir}/${subject}/${session}/${subject}_${session}_acq-MRP_run-001_desc-cropped_T1w_seg.nii.gz
-derivatives_dir=${bidsdir}/${subject}/${session}/
+# Get SynthSeg segmentation
+resize_folder=$(ls ${bidsdir}/${subject}/${session})
+res=${resize_folder#*_res-}   # remove everything up to "res-"
+res=${res%%_*}
+inv_resolution=$(printf '%s / %s\n' "1" "$res" | bc -l)
+res='res-'${res}
 
+derivatives_dir=${bidsdir}/${subject}/${session}/${resize_folder}/
+
+groundtruth_segmentation=${segmentationdir}/${subject}/${session}/${subject}_${session}_run-001_from-BOPS_to-BCP_desc-rigid_dseg.nii.gz
+rca_segmentation=${derivatives_dir}/${subject}_${session}_acq-MRP_run-001_${res}_aseg+aparc-native.nii.gz
 
 echo 'BOPS segmentation in BCP space: '${groundtruth_segmentation}
-echo 'SynthSeg segmentation: '${synthseg_segmentation}
+echo 'RCA segmentation: '${rca_segmentation}
 
-resampled_groundtruth_segmentation=${bidsdir}/${subject}/${session}/${subject}_${session}_run-001_desc-resampled-into-BCP_dseg.nii.gz
+resampled_groundtruth_segmentation=${derivatives_dir}/${subject}_${session}_run-001_desc-resampled-into-BCP_dseg.nii.gz
 
 # Resample BOPS segementation into BCP grid. They are already in the same BCP space 
-python voxel-grid.py --seg ${groundtruth_segmentation} --target ${synthseg_segmentation} --out ${resampled_groundtruth_segmentation}
-echo 'Got BOPS segmentation in BCP space into correct grid'
-
-
-# Merge cortical labels for comparison with the ground truth 'cortex' labels
-#python merge_ctx_labels.py ${synthseg_segmentation} ${bidsdir}/${subject}/${session}/${subject}_${session}_acq-MPR_run-001_desc-SS-seg-merged-labels_T1w_labels.nii.gz
-
-#python dice_per_region.py ${resampled_groundtruth_segmentation} ${bidsdir}/${subject}/${session}/${subject}_${session}_acq-MPR_run-001_desc-SS-seg-merged-labels_T1w_labels.nii.gz ${bidsdir}/${subject}/${session}/${subject}_${session}_acq-MPR_run-001_T1w_dice-scores.csv
+python voxel-grid.py --seg ${groundtruth_segmentation} --target ${rca_segmentation} --out ${resampled_groundtruth_segmentation}
 
 ### DICE BETWEEN BCP SYNTHSEG SEGMENTATION OUTPUT AND BOPS GROUNDTRUTH
-SS_BOPS_labels=${derivatives_dir}/${subject}_${session}_acq-MPR_run-001_desc-BOPS-labels_seg.nii.gz
-python merge_synthseg_to_bops_labels.py ${synthseg_segmentation} ${SS_BOPS_labels}
+rca_BOPS_labels=${derivatives_dir}/${subject}_${session}_acq-MPR_run-001_desc-BOPS-labels_aseg+aparc-native.nii.gz
+python merge_synthseg_to_bops_labels.py ${rca_segmentation} ${rca_BOPS_labels}
 python estimate-dice.py \
   ${resampled_groundtruth_segmentation} \
-  ${SS_BOPS_labels} \
+  ${rca_BOPS_labels} \
   /home/ld548/rds/rds-kw350-meld/growthcharts/dev/BOPS/BIDS/LUT.txt \
   ${derivatives_dir}/${subject}_${session}_acq-MPR_run-001_T1w_dice-scores-BOPS-labels.csv
 
 ### DICE BETWEEN QC-LABEL CLASSES IN BCP SYNTHSEG SEGMENTATION OUTPUT AND BOPS GROUNDTRUTH
 # DICE comparison with SynthSeg-QC-label-segmentation
-SS_QC_merged_labels=${derivatives_dir}/${subject}_${session}_acq-MPR_run-001_desc-SS-QC-merged-labels_T1w_labels.nii.gz
+rca_QC_merged_labels=${derivatives_dir}/${subject}_${session}_acq-MPR_run-001_desc-aparc+aseg-QC-merged-labels_T1w_labels.nii.gz
 groundtruth_QC_merged_labels=${derivatives_dir}/${subject}_${session}_run-001_desc-QC-merged-labels_dseg.nii.gz
 
-python merge_qc_labels.py ${SS_BOPS_labels} ${SS_QC_merged_labels}
+python merge_qc_labels.py ${rca_BOPS_labels} ${rca_QC_merged_labels}
 python merge_qc_labels.py ${resampled_groundtruth_segmentation} ${groundtruth_QC_merged_labels}
 
-python estimate-dice.py ${groundtruth_QC_merged_labels} ${SS_QC_merged_labels} LUT.qc-labels.txt ${derivatives_dir}/${subject}_${session}_acq-MPR_run-001_T1w_dice-scores-qc-labels.csv
+python estimate-dice.py ${groundtruth_QC_merged_labels} ${rca_QC_merged_labels} LUT.qc-labels.txt ${derivatives_dir}/${subject}_${session}_acq-MPR_run-001_T1w_dice-scores-qc-labels.csv
+
 
 
 
