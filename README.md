@@ -25,19 +25,24 @@ We use the following scripts to process the BCP T1w-scans:
 `BCP-pipeline-testing/${pipeline}.sh`
 
 
+
 ### Estimate DICE coefficient between groundtruth and SynthSeg segmentations
 Use the following scripts to estimate the DICE coefficient between the BOPS groundtruth segmentation, registered into BCP space, and the SynthSeg segmentations for each of the pipelines:
 
 `BCP-pipeline-testing/DICE-${pipeline}.sh`
 
+
+
 This makes use of the following helper scripts:
 
+`BCP-pipeline-testing/voxel-grid.py` which resamples we use to match the voxel grids of the BOPS and BCP parcellations
 
 `BCP-pipeline-testing/merge_synthseg_to_bops_labels.py` which merges SynthSeg segmentation labels to resemble BOPS labels
 
 `BCP-pipeline-testing/merge_qc_labels.py` which merges segmentation labels from BOPS label format to SynthSeg QC labels
 
 `BCP-pipeline-testing/estimate-dice.py` which estimates the DICE coefficient between two segmentations
+
 
 ### Analyse the goodness metrics for the different pipelines
 
