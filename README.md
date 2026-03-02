@@ -11,14 +11,16 @@ The following script takes the BOPS manually curated ground truth segmentations,
 `Register-BCP-BOPS/register-BCP-to-BOPS.sh` 
 
 ### Run six different processing pipelines
-We will run the following six pipelines:
+We will run the following four pipelines:
 
 1. SynthSeg robust vanilla (`SSr-vanilla`)
-2. Recon-All Clinical vanilla (`RCA-clinical-vanilla`)
 3. SynthSeg robust crop (`SSr-crop`)
 4. SynthSeg robust resize (`SSr-resize`)
 5. SynthSeg robust resize and crop (`SSr-resize-and-crop`)
-6. Recon-All Clinical resize and crop (`RCA-clinical-resize-and-crop`)
+
+Two additional pipelines are no longer in use:
+1. Recon-All Clinical vanilla (`RCA-clinical-vanilla`)
+2. Recon-All Clinical resize and crop (`RCA-clinical-resize-and-crop`)
    
 We use the following scripts to process the BCP T1w-scans:
 
@@ -46,6 +48,6 @@ This makes use of the following helper scripts:
 
 ### Analyse the goodness metrics for the different pipelines
 
-
+We analyse the goodness metrics for all pipelines in R, using scripts in the `analysis` folder. Each script generates one figure for the resulting manuscript. 
 
 
