@@ -51,7 +51,11 @@ This makes use of the following helper scripts:
 We analyse the goodness metrics for all pipelines in R, using scripts in the `analysis` folder. Each script generates one figure for the resulting manuscript. 
 
 `fig1_lifespan-plots.R` Highlights background info and hypotheses
+
 `fig2_methods.R` Shoes how we estimate the scaling factor
+
 `fig3_pipeline-results.R` Compares segmentation results in BCP
+
 `fig4_show_improvements.R` Shows improvements across neurodevelopment
+
 
