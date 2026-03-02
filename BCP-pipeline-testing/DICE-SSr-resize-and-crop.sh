@@ -98,7 +98,6 @@ python ${TOOLPATH}/reconall-clinical-resampling/change_resolution_header.py \
         -i ${derivatives_dir}/${seg_resize_space} \
         -o ${derivatives_dir}/${seg_native} \
         -s ${inv_resolution} \
-        --force-int
 
 echo "Header change resampled SynthSeg segmentation"
 
