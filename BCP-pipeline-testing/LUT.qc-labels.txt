@@ -1,0 +1,10 @@
+# index  name                         R    G    B    A
+0        Unknown                      0    0    0    0
+1        qc.general.white.matter      245  245  245  0
+2        qc.general.grey.matter       160  160  160  0
+3        qc.general.csf               80   200  255  0
+4        qc.cerebellum                200  120  255  0
+5        qc.brainstem                 255  170  90   0
+6        qc.thalamus                  90   150  255  0
+7        qc.putamen.pallidum          255  120  180  0
+8        qc.hippocampus.amygdala      120  255  170  0
