@@ -14,7 +14,7 @@
 # The number of rows in the output file BCP/preprocessing/all-T1s.tsv is the array number
 #
 
-modality=T1w
+modality=T2w
 
 now=$(date +"%T")
 echo "Starting;  Current time : $now"
@@ -41,7 +41,7 @@ FS_LICENSE=${TOOLPATH}/freesurfer/license.txt
 echo "Start python environment"
 # Setup SynthSeg
 # Will need to make conda available - change this to your own conda installation
-source /home/ld548/software/miniconda3/etc/profile.d/conda.sh
+source /home/co-mak1/miniconda3/etc/profile.d/conda.sh
 conda activate ${rdspath}/growthcharts/tools/synthseg/conda-envs/envs/synthseg_38
 synthsegpath=${rdspath}/growthcharts/tools/synthseg/SynthSeg/
 echo "Started python environment"
@@ -51,11 +51,11 @@ echo "Started python environment"
 #############################################################
 
 # Input paths
-allt1s=${rdspath}/growthcharts/dev/BOPS/code/BCP-pipeline-testing/all-T1s.tsv
+allt2s=${rdspath}/growthcharts/dev/BOPS/code/BCP-pipeline-testing/all-T2s.tsv
 bidsdir=${rdspath}/growthcharts/data/BCP/BIDS/
 
 # Read the row at the specified index
-row=$(sed "${SLURM_ARRAY_TASK_ID}q;d" "$allt1s")
+row=$(sed "${SLURM_ARRAY_TASK_ID}q;d" "$allt2s")
 subject=$(echo "$row" | awk '{print $1}')
 session=$(echo "$row" | awk '{print $2}')
 #acq=$(echo "$row" | awk '{print $3}')

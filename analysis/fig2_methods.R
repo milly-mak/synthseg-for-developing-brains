@@ -29,8 +29,8 @@ p1 = CURVE %>%
   labs(color='')+
   ylab('TCV')+xlab('Age')+
   scale_x_continuous(breaks = log(280+c(0,180,1*365,5*365,18*365,30*365,80*365)),
-                     labels = c('40w','6m','1y','5y','18y','30y','80y'), limits = c(log(280), log(100*365)))+
-  ggtitle('Normative trajectory of TCV')+
+                     labels = c('40pmw','6m','1y','5y','18y','30y','80y'), limits = c(log(280), log(100*365)))+
+  #ggtitle('Normative trajectory of TCV')+
   theme(text = element_text(size=12))+
   scale_color_manual(values=sex_colors)
 
@@ -41,16 +41,21 @@ p2 = scaling_factor %>%
    ggplot(aes(x=log(age_days), y=scalefactor_adj_perc500))+
    geom_point()+
    scale_x_continuous(breaks=log(280+c(0,180,1*365,5*365,18*365,30*365,80*365)),
-                      labels=c('40w','6m','1y','5y','18y','30y','80y'))+
+                      labels=c('40pmw','6m','1y','5y','18y','30y','80y'))+
    theme_minimal()+
    theme(text = element_text(size=12))+
-   ylab('Scaling factor') + xlab('Age')+
-   ggtitle('Scaling factor')
+   ylab('Scaling factor') + xlab('Age')#+
+   #ggtitle('Scaling factor')
+
+title_theme <- theme(
+  plot.title = element_text(hjust = 0, margin = margin(t = 10, b = 10)),
+  plot.title.position = "plot"
+)
+
+p1_with_legend <- p1 + labs(title = "C | Normative trajectory of TCV") + title_theme
+p2_with_legend <- p2 + labs(title = "D | Scaling factor") + title_theme
 
 
-p3=ggarrange(p1,p2, widths=c(1.2,1))
+p3=ggarrange(p1_with_legend,p2_with_legend, widths=c(1.2,1))
 ggsave(p3,filename = paste0(outpath,'fig2.png'), bg='white', height = 3, width=10)
 ggsave(p3,filename = paste0(outpath,'fig2.pdf'),  device = cairo_pdf,bg='white', height = 3, width=10)
-
-
-  
